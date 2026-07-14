@@ -1,0 +1,9 @@
+.env
+.myenv/
+myenv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.logfire/
+processed_data/
+*.pt
