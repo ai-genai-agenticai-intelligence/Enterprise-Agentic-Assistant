@@ -7,3 +7,5 @@ __pycache__/
 .logfire/
 processed_data/
 *.pt
+.vercel
+.env*
