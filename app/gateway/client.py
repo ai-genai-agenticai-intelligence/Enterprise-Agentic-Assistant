@@ -26,6 +26,10 @@ from app.config import settings
 #   - Fallback: primary @rag/llama-3.3-70b-versatile → @brag/llama-3.1-8b-instant on failure
 #   - Cache: semantic mode (requires Portkey Enterprise — silently falls back to simple on free/starter)
 #   - Retry: 2 attempts on rate limit / server error before triggering the fallback target
+GROQ_SLUG = getattr(settings, "GROQ_SLUG", "rag")
+GROQ_SLUG_2 = getattr(settings, "GROQ_SLUG_2", "brag")
+PORTKEY_API_KEY = getattr(settings, "PORTKEY_API_KEY", "")
+
 GATEWAY_CONFIG = {
     "strategy": {"mode": "fallback"},
     "cache": {"mode": "simple"},
@@ -34,13 +38,13 @@ GATEWAY_CONFIG = {
         "on_status_codes": [429, 503]
     },
     "targets": [
-        {"override_params": {"model": f"@{settings.GROQ_SLUG}/llama-3.3-70b-versatile"}},
-        {"override_params": {"model": f"@{settings.GROQ_SLUG_2}/llama-3.1-8b-instant"}},
+        {"override_params": {"model": f"@{GROQ_SLUG}/llama-3.3-70b-versatile"}},
+        {"override_params": {"model": f"@{GROQ_SLUG_2}/llama-3.1-8b-instant"}},
     ]
 }
 
 portkey_client = Portkey(
-    api_key=settings.PORTKEY_API_KEY,
+    api_key=PORTKEY_API_KEY,
     config=GATEWAY_CONFIG
 )
 
@@ -57,12 +61,12 @@ def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:
       does not understand it. You are still using Groq models; Portkey is just in the middle.
     """
     return ChatOpenAI(
-        api_key=settings.PORTKEY_API_KEY,
+        api_key=PORTKEY_API_KEY,
         base_url=PORTKEY_GATEWAY_URL,
-        model=f"@{settings.GROQ_SLUG}/llama-3.3-70b-versatile",
+        model=f"@{GROQ_SLUG}/llama-3.3-70b-versatile",
         temperature=0,
         default_headers=createHeaders(
-            api_key=settings.PORTKEY_API_KEY,
+            api_key=PORTKEY_API_KEY,
             config=GATEWAY_CONFIG,
             metadata={
                 "feature": feature,
